@@ -18,6 +18,11 @@ public class TeacherController {
          teacherService.addTeacher(teacher);
          return "teacher: "+teacher.toString()+" added";
     }
+    @RequestMapping(value="/teacher/edit", method= RequestMethod.POST)
+    public String editTeacherCategory(@ModelAttribute Teacher teacher){
+        teacherService.getTeacher(teacher.getId()).setCategory(teacher.getCategory());
+        return "teacher's new category is :"+teacher.getCategory();
+    }
     @RequestMapping(value="/teacher/delete/{id}", method= RequestMethod.POST)
     public String deleteTeacher(@PathVariable Long id){
        teacherService.removeTeacher(id);
