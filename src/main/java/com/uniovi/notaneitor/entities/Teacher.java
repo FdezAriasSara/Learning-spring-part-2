@@ -1,13 +1,19 @@
 package com.uniovi.notaneitor.entities;
 
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
+@Entity
 public class Teacher {
 
     private String name;
     private String surname;
     private String Dni;
     private String category;
+    @Id
+    @GeneratedValue
     private Long id;
 
 
