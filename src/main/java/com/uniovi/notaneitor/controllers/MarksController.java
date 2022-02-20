@@ -18,6 +18,12 @@ public class MarksController {
     @Autowired// INYECTAMOS EL SERVICIO DE NOTAS-> Este servicio creará la bean de Notas!
     private MarksService marksService;
 
+
+    @RequestMapping("/mark/list/update")
+    public String updateList(Model model){
+        model.addAttribute("markList",marksService.getMarks());
+        return "mark/list::tableMarks";//retorna el fragmento table marks
+    }
     //Añadimos un metodo (el nombre no es relevante, pero sí la notación @RequestMapping)
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")

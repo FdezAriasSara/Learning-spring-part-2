@@ -70,8 +70,16 @@
 <div class="container" id="main-container">
     <h2>Notas</h2>
     <p>Las notas que actualmente figuran en el sistema son las siguientes:</p>
+    <!--Realizamos un botón que llame a update, y sustituya el contenido de la tabla de notas.-->
+    <button type="button" id="updateButton" class="btn btn-default">Actualizar</button>
+        <script> $( "#updateButton" ).click(function() { $("#tableMarks").load('/mark/list/update'); }); </script>
+
+        <!--Al pulsarlo se realiza una llamada con JQUERY a la URL /list/update sustituyendo el contenido antiguo
+        de la tabla por el que acaba de obtener (usando la función l oad)-->
+
     <div class="table-responsive">
-        <table class="table table-hover">
+        <!--Al especificar el fragmento. este será lo unico que se actualice-->
+        <table class="table table-hover" th:fragment="tableMarks" id="tableMarks">
             <thead>
             <tr>
                 <th scope="col">id</th>
