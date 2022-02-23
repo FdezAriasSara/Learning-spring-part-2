@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue
@@ -13,6 +14,10 @@ public class User {
     private String name;
     private String lastName;
     private String role;
+    private String password;
+    @Transient//propiedad que no se almacena en la tabla
+    private String passwordConfirm;
+
     //mappedBy->Para indicar que la entidad es la inversa en la relación= un usuario puede tener muchas notas.
     //cascade-> relación en cascada-> los cambios tendrán efecto en otros objetos relacionados, en este caso, notas.
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -72,5 +77,20 @@ public class User {
         this.id = id;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
+    }
 
 }
