@@ -7,7 +7,8 @@
     <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item "><a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a></li>
-            <li class="nav-item dropdown active"><a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+            <li class="nav-item dropdown active"><a aria-expanded="false" aria-haspopup="true"
+                                                    class="nav-link dropdown-toggle"
                                                     data-toggle="dropdown" href="#" id="navbarDropdown"
                                                     role="button"> Gestión de notas </a>
                 <div aria-labelledby="navbarDropdown" class="dropdown-menu"><a class="dropdown-item" href="/mark/list">Ver
@@ -24,11 +25,27 @@
             </li>
         </ul>
         <ul class="navbar-nav justify-content-end">
-            <li class="nav-item"><a class="nav-link" href="/registrarse"> <i class='fas fa-user-alt'
-                                                                             style='font-size:16px'></i> Registrate</a>
+            <li class="nav-item dropdown"><a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+                                             data-toggle="dropdown"
+                                             href="#" id="btnLanguage" role="button"> <span
+                    th:text="#{language.change}"></span> </a>
+                <div aria-labelledby="navbarDropdown" class="dropdown-menu" id="languageDropdownMenuButton">
+                    <a class="dropdown-item" id="btnEnglish" value="EN">
+                        <img style="border: 0; float: left; margin-right: 15px" th:src="@{/images/if_uk_flag.png}"/>
+                        <span th:text="#{language.en}">Inglés</span> </a> <a class="dropdown-item" id="btnSpanish"
+                                                                             value="ES"> <img
+                        style="border: 0; float: left; margin-right: 15px" th:src="@{/images/if_spain_flag.png}"/> <span
+                        th:text="#{language.es}">Español</span> </a></div>
             </li>
-            <li class="nav-item"><a class="nav-link" href="/identificarse"> <i class='fas fa-sign-in-alt'
-                                                                               style='font-size:16px'></i> Identifícate</a>
+
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/registrarse">
+                <a class="nav-link" href="/signup" th:text="#{signup.message}">
+                <i class='fas fa-user-alt' style='font-size:16px'></i> Registrate</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/identificarse">
+                <a class="nav-link" href="/login" th:text="#{login.message}">
+                <i class='fas fa-sign-in-alt'   style='font-size:16px'></i> Identifícate</a>
             </li>
         </ul>
         <!--<form class="form-inline"> <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"> <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button> </form> -->
