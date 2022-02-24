@@ -3,11 +3,14 @@ package com.uniovi.notaneitor.controllers;
 import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.services.SecurityService;
 import com.uniovi.notaneitor.services.UsersService;
+import com.uniovi.notaneitor.validators.SignUpFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +22,8 @@ public class UsersController {
     private UsersService usersService;
     @Autowired
     private SecurityService securityService;
+    @Autowired
+    private SignUpFormValidator signUpFormValidator;
 
     @RequestMapping("/user/list")
     public String getListado(Model model) {
@@ -64,18 +69,40 @@ public class UsersController {
     }
 
     /**
-     * signup crea un nuevo usuario con el rol STUDENT, lo identifica automáticamente y redirige la navegación a home.
+     * Retorna la vista signup.
+     * @param model , user vacío sin datos inicialmente.(Este objeto se está solicitando en el th:object="${user}"
+     *              que hemos incluido en la vista.)
+     * @return
+     */
+
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public String signup(Model model) {
+        model.addAttribute("user", new User());
+        return "signup";
+    }
+
+    /**
+     * Esta respuesta la que recibe los datos del formulario y debe validarlos.
+     * Aplicamos el signUpFormValidator, si se produce un error redirigimos a la vista signup,
+     * es la vista actual (no se ha podido completar el registro)
      *
      * @param user
-     * @param model
+     * @param result
      * @return
      */
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
-    public String signup(@ModelAttribute("user") User user, Model model) {
+    public String signup(@Validated User user, BindingResult result) {
+
+        signUpFormValidator.validate(user,result);
+        if(result.hasErrors())
+            return "signup";
         usersService.addUser(user);
-        securityService.autoLogin(user.getDni(), user.getPasswordConfirm());
+        securityService.autoLogin(user.getDni(),user.getPasswordConfirm());
         return "redirect:home";
+
     }
+
+
 
     //login y home muestran únicamente sus vistas correspondientes
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -92,3 +119,18 @@ public class UsersController {
         return "home";
     }
 }
+/**
+ *
+ *      * signup crea un nuevo usuario con el rol STUDENT, lo identifica automáticamente y redirige la navegación a home.
+ *      *
+ *      * @param user
+ *      * @param model
+ *      * @return
+ *
+ * @RequestMapping(value = "/signup", method = RequestMethod.POST)
+ * public String signup(@ModelAttribute("user") User user, Model model) {
+ * usersService.addUser(user);
+ * securityService.autoLogin(user.getDni(), user.getPasswordConfirm());
+ * return "redirect:home";
+ * }
+ */
