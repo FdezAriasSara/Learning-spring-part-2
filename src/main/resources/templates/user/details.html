@@ -1,0 +1,91 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Notaneitor</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" rel="stylesheet">
+    <!-- JS files: jQuery first, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<!-- Barra de Navegación superior -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#"></a>
+    <img alt="logo" src="/images/student-48.png"/>
+    <button aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+            data-target="#navbarColor02" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="my-navbarColor02">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item ">
+                <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item dropdown active">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+                   id="navbarDropdown" role="button"> Gestión de notas
+                </a>
+                <div aria-labelledby="navbarDropdown" class="dropdown-menu">
+                    <a class="dropdown-item" href="/mark/list">Ver Notas</a>
+                    <a class="dropdown-item" href="/mark/add">Agregar Nota</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/mark/filter">Filtrar</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+                   id="profesorDropdown" role="button"> Gestión de profesores
+                </a>
+                <div aria-labelledby="navbarDropdown" class="dropdown-menu">
+                    <a class="dropdown-item" href="/professor/list">Ver profesores</a>
+                </div>
+            </li>
+        </ul>
+        <ul class="navbar-nav justify-content-end">
+            <li class="nav-item">
+                <a class="nav-link" href="/registrarse">
+                    <i class='fas fa-user-alt' style='font-size:16px'></i>
+                    Registrate</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/identificarse">
+                <i class='fas fa-sign-in-alt' style='font-size:16px'></i>
+                Identifícate</a></li>
+        </ul>
+        <!--<form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
+        </form> -->
+    </div>
+</nav>
+
+<div class="container" id="main-container">
+    <h2>Detalles del usuario </h2>
+    <div class="card">
+        <div class="card-header">DNI</div>
+        <div class="card-body"><p class="card-text" th:text="${user.dni}">88888847X</p></div>
+    </div>
+    <br>
+    <div class="card">
+        <div class="card-header">Nombre:</div>
+        <div class="card-body">
+            <p class="card-text" th:text="${user.name}"> Pepito</p>
+        </div>
+    </div>
+    <br>
+    <div class="card">
+        <div class="card-header">Apellidos</div>
+        <div class="card-body">
+            <p class="card-text" th:text="${user.lastName}">Pérez</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.uniovi.notaneitor.controllers;
 
+import com.uniovi.notaneitor.entities.Mark;
 import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.services.SecurityService;
 import com.uniovi.notaneitor.services.UsersService;
@@ -55,18 +56,7 @@ public class UsersController {
         return "redirect:/user/list";
     }
 
-    @RequestMapping(value = "/user/edit/{id}")
-    public String getEdit(Model model, @PathVariable Long id) {
-        User user = usersService.getUser(id);
-        model.addAttribute("user", user);
-        return "user/edit";
-    }
 
-    @RequestMapping(value = "/user/edit/{id}", method = RequestMethod.POST)
-    public String setEdit(Model model, @PathVariable Long id, @ModelAttribute User user) {
-        usersService.addUser(user);
-        return "redirect:/user/details/" + id;
-    }
 
     /**
      * Retorna la vista signup.
@@ -101,7 +91,39 @@ public class UsersController {
         return "redirect:home";
 
     }
+    /**
+     * Buscamos el usuario que encaja con la id que recibimos como parámetro . Lo guardamos como atributo del modelo
+     * y retomamos la plantilla user/edit
+     *
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/user/edit/{id}")
+    public String getEdit(Model model, @PathVariable Long id) {
+        model.addAttribute("user", usersService.getUser(id));
+        model.addAttribute("usersList",usersService.getUsers());
+        return "user/edit";
+    }
 
+    /**
+     *
+     *
+     * @param id del user que está siendo modificado como ModelAtributte (dentro de la id), user con todos los atributos del mismo.
+     * @return
+     */
+    @RequestMapping(value = "/user/edit/{id}", method = RequestMethod.POST)
+    public String setEdit(@ModelAttribute User user, @PathVariable Long id) {
+        User originalUser=usersService.getUser(id);
+        //modificar solo DNI, apellidos y nombre.
+        originalUser.setDni(user.getDni());
+        originalUser.setName(user.getName());
+        originalUser.setLastName(user.getLastName());
+        //Una vez modificado, lo sobreescribimos
+        usersService.addUser(originalUser);
+        //Redirigimos a user/details
+        return "redirect:/user/details/" + id;
+    }
 
 
     //login y home muestran únicamente sus vistas correspondientes
