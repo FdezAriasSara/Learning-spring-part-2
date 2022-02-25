@@ -4,9 +4,12 @@ package com.uniovi.notaneitor.controllers;
 import com.uniovi.notaneitor.entities.Mark;
 import com.uniovi.notaneitor.services.MarksService;
 import com.uniovi.notaneitor.services.UsersService;
+import com.uniovi.notaneitor.validators.MarkFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,8 @@ public class MarksController {
     private MarksService marksService;
     @Autowired
     private UsersService usersService;
+    @Autowired
+    private MarkFormValidator markFormValidator;
 
     @RequestMapping("/mark/list/update")
     public String updateList(Model model){
@@ -34,12 +39,12 @@ public class MarksController {
         return "mark/list";
     }
 
-    //!!!!MUY IMPORTANTE:Si el objeto del modelo en el que se mapean los parámetros tiene más atributos de los recibidos estos atributos no se inicializarán, serán null.
+
     @RequestMapping(value = "/mark/add", method = RequestMethod.POST)
-    //Indicamos que la petición será de tipo POST->POR DEFECTO se activa GET
-    // public String setMark(@RequestParam String description, @RequestParam String score) {-> signatura antigua.
-    public String setMark(@ModelAttribute Mark mark) {//Ahora Mapeamos los parametros DIRECTAMENTE de un objeto MARK
-        // return "added: " + mark.getDescription() + " with score : " + mark.getScore() + " id: " + mark.getId();-> previo al uso de beans.
+    public String setMark(@Validated Mark mark, BindingResult result) {
+        markFormValidator.validate(mark,result);
+        if(result.hasErrors())
+            return "mark/add";
         marksService.addMark(mark);
 
         return "redirect:/mark/list";
@@ -85,7 +90,7 @@ public class MarksController {
      * @return
      */
     @RequestMapping(value = "/mark/edit/{id}", method = RequestMethod.POST)
-    public String setEdit(@ModelAttribute Mark mark, @PathVariable Long id) {
+    public String setEdit(@Validated Mark mark, @PathVariable Long id) {
        Mark originalMark=marksService.getMark(id);
        //modificar solo scores y descripction
         originalMark.setScore(mark.getScore());

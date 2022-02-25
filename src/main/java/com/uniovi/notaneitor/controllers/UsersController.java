@@ -5,6 +5,7 @@ import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.services.SecurityService;
 import com.uniovi.notaneitor.services.UsersService;
 import com.uniovi.notaneitor.validators.SignUpFormValidator;
+import com.uniovi.notaneitor.validators.UserEditionFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,8 @@ public class UsersController {
     private SecurityService securityService;
     @Autowired
     private SignUpFormValidator signUpFormValidator;
+    @Autowired
+    private UserEditionFormValidator userEditionFormValidator;
 
     @RequestMapping("/user/list")
     public String getListado(Model model) {
@@ -113,13 +116,16 @@ public class UsersController {
      * @return
      */
     @RequestMapping(value = "/user/edit/{id}", method = RequestMethod.POST)
-    public String setEdit(@ModelAttribute User user, @PathVariable Long id) {
+    public String setEdit(@ModelAttribute User user, @PathVariable Long id, BindingResult result) {
         User originalUser=usersService.getUser(id);
         //modificar solo DNI, apellidos y nombre.
         originalUser.setDni(user.getDni());
         originalUser.setName(user.getName());
         originalUser.setLastName(user.getLastName());
-        //Una vez modificado, lo sobreescribimos
+        //Una vez modificado,lo validamos y si es correcto lo sobreescribimos
+        userEditionFormValidator.validate(originalUser,result);
+        if(result.hasErrors())
+            return "user/edit";
         usersService.addUser(originalUser);
         //Redirigimos a user/details
         return "redirect:/user/details/" + id;

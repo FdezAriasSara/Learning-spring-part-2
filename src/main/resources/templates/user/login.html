@@ -4,7 +4,7 @@
 <body>
 <nav th:replace="fragments/nav"/>
 <div class="container"><h2>Identifícate</h2>
-    <form action="/login" class="form-horizontal" method="post">
+    <form action="/login" class="form-horizontal" method="post"  th:object="${user}">
         <div class="form-group"><label class="control-label col-sm-2" for="username">DNI:</label>
             <div class="col-sm-10"><input class="form-control" id="username" name="username" placeholder="Ejemplo: profSDI"
                                           required="true" type="text"/></div>

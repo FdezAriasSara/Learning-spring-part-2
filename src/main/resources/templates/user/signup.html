@@ -4,7 +4,8 @@
 <body> <!-- Barra de Navegación superior -->
 <nav th:replace="fragments/nav"/>
 <div class="container"><h2>Regístrate como usuario.</h2>
-    <form action="/user/add" class="form-horizontal" method="post">
+    <form action="/signup" class="form-horizontal" method="post"  th:object="${user}">
+
         <div class="form-group"><label class="control-label col-sm-2" for="dni">DNI:</label>
             <div class="col-sm-10"><input class="form-control" id="dni" name="dni" placeholder="99999999Y" required="true"
                                           type="text"/>
