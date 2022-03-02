@@ -5,35 +5,54 @@ import com.uniovi.notaneitor.repositories.MarksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service//Notación que indica que esta clase es un servicio-> Los sevicios crean BEANS
 public class MarksService {
 
+    private final HttpSession httpSession;
     @Autowired
     private MarksRepository marksRepository;
 
+    public MarksService(HttpSession httpSession) {
+        this.httpSession = httpSession;
+    }
+
     public List<Mark> getMarks() {
-        List<Mark> marks=new ArrayList<>();
+        List<Mark> marks = new ArrayList<>();
         marksRepository.findAll().forEach(marks::add);
         return marks;
     }
 
     public Mark getMark(Long id) {
-        return marksRepository.findById(id).get();
+        //Obtenemos la lista de notas consultadas en la sesión
+        Set<Mark> consultedList = (Set<Mark>) httpSession.getAttribute("consultedList");
+        //Si dicha lista está vacia, se crea una nueva.
+        if (consultedList == null) {
+            consultedList = new HashSet<Mark>();
+        }
+        //Obtenemos la nota que queríamos buscar mediante el id
+        Mark obtainedMark = marksRepository.findById(id).get();
+        //la añadimos a la lista de notas consultadas.
+        consultedList.add(obtainedMark);
+        //Asignamos la lista al atributo consultedList
+        httpSession.setAttribute("consultedList", consultedList);
+        //retornamos la nota que queríamos buscar.
+        return obtainedMark;
     }
 
-    public void addMark(Mark mark) { // Si en Id es null le asignamos el ultimo + 1 de la lista
-      marksRepository.save(mark);
-    }
+        public void addMark (Mark mark){ // Si en Id es null le asignamos el ultimo + 1 de la lista
+            marksRepository.save(mark);
+        }
 
-    public void deleteMark(Long id) {
-        marksRepository.deleteById(id);
+        public void deleteMark (Long id){
+            marksRepository.deleteById(id);
+        }
     }
-}
 //Implementación sin repositorio;
 /*
  private final List<Mark> marksList = new LinkedList<>(); -> Emplearemos un repositorio

@@ -6,14 +6,18 @@ import com.uniovi.notaneitor.services.MarksService;
 import com.uniovi.notaneitor.services.UsersService;
 import com.uniovi.notaneitor.validators.MarkFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.servlet.http.HttpSession;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 //@RestController //Indica que la clase es un controlador REST y que responde a peticiones REST
@@ -25,25 +29,36 @@ public class MarksController {
     private UsersService usersService;
     @Autowired
     private MarkFormValidator markFormValidator;
+    @Autowired
+    private HttpSession httpSession;
 
     @RequestMapping("/mark/list/update")
-    public String updateList(Model model){
-        model.addAttribute("markList",marksService.getMarks());
+    public String updateList(Model model) {
+        model.addAttribute("markList", marksService.getMarks());
         return "mark/list::tableMarks";//retorna el fragmento table marks
     }
+
     //Añadimos un metodo (el nombre no es relevante, pero sí la notación @RequestMapping)
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")
     public String getList(Model model) {
+        Set<Mark> consultedList = (Set<Mark>) httpSession.getAttribute("consultedList");
+        //Obtenemos la lista de notas que se han consultado en la sesión
+        if (consultedList == null) {
+            consultedList = new HashSet<Mark>();
+        }
+        //La inicializamos en caso de ser null
+        //Añadimos dicha lista al modelo.(o sobreescribimos la existente)
+        model.addAttribute("consultedList", consultedList);
         model.addAttribute("markList", marksService.getMarks());
-        return "mark/list";
+        return "mark/list";//Retornamos la vista a marks/list
     }
 
 
     @RequestMapping(value = "/mark/add", method = RequestMethod.POST)
     public String setMark(@Validated Mark mark, BindingResult result) {
-        markFormValidator.validate(mark,result);
-        if(result.hasErrors())
+        markFormValidator.validate(mark, result);
+        if (result.hasErrors())
             return "mark/add";
         marksService.addMark(mark);
 
@@ -79,20 +94,19 @@ public class MarksController {
     @RequestMapping(value = "/mark/edit/{id}")
     public String getEdit(Model model, @PathVariable Long id) {
         model.addAttribute("mark", marksService.getMark(id));
-        model.addAttribute("usersList",usersService.getUsers());
+        model.addAttribute("usersList", usersService.getUsers());
         return "mark/edit";
     }
 
     /**
-     *
      * @param mark
-     * @param id de la nota que está siendo modificada como ModelAtributte (dentro de la id), mark con todos los atributos de la nota.
+     * @param id   de la nota que está siendo modificada como ModelAtributte (dentro de la id), mark con todos los atributos de la nota.
      * @return
      */
     @RequestMapping(value = "/mark/edit/{id}", method = RequestMethod.POST)
     public String setEdit(@Validated Mark mark, @PathVariable Long id) {
-       Mark originalMark=marksService.getMark(id);
-       //modificar solo scores y descripction
+        Mark originalMark = marksService.getMark(id);
+        //modificar solo scores y descripction
         originalMark.setScore(mark.getScore());
         originalMark.setDescription(mark.getDescription());
         marksService.addMark(originalMark);
