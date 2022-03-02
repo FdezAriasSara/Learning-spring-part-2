@@ -42,14 +42,7 @@ public class MarksController {
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")
     public String getList(Model model) {
-        Set<Mark> consultedList = (Set<Mark>) httpSession.getAttribute("consultedList");
-        //Obtenemos la lista de notas que se han consultado en la sesión
-        if (consultedList == null) {
-            consultedList = new HashSet<Mark>();
-        }
-        //La inicializamos en caso de ser null
-        //Añadimos dicha lista al modelo.(o sobreescribimos la existente)
-        model.addAttribute("consultedList", consultedList);
+    
         model.addAttribute("markList", marksService.getMarks());
         return "mark/list";//Retornamos la vista a marks/list
     }

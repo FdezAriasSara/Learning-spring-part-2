@@ -1,7 +1,7 @@
 package com.uniovi.notaneitor.controllers;
 
-import com.uniovi.notaneitor.entities.Mark;
 import com.uniovi.notaneitor.entities.User;
+import com.uniovi.notaneitor.services.RolesService;
 import com.uniovi.notaneitor.services.SecurityService;
 import com.uniovi.notaneitor.services.UsersService;
 import com.uniovi.notaneitor.validators.SignUpFormValidator;
@@ -28,6 +28,8 @@ public class UsersController {
     private SignUpFormValidator signUpFormValidator;
     @Autowired
     private UserEditionFormValidator userEditionFormValidator;
+    @Autowired
+    private RolesService rolesService;
 
     @RequestMapping("/user/list")
     public String getListado(Model model) {
@@ -37,7 +39,7 @@ public class UsersController {
 
     @RequestMapping(value = "/user/add")
     public String getUser(Model model) {
-        model.addAttribute("usersList", usersService.getUsers());
+        model.addAttribute("rolesList", rolesService.getRoles());
         return "user/add";
     }
 
@@ -60,9 +62,9 @@ public class UsersController {
     }
 
 
-
     /**
      * Retorna la vista signup.
+     *
      * @param model , user vacío sin datos inicialmente.(Este objeto se está solicitando en el th:object="${user}"
      *              que hemos incluido en la vista.)
      * @return
@@ -85,15 +87,18 @@ public class UsersController {
      */
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signup(@Validated User user, BindingResult result) {
-
-        signUpFormValidator.validate(user,result);
-        if(result.hasErrors())
+        signUpFormValidator.validate(user, result);
+        if (result.hasErrors()) {
             return "signup";
+        }
+        //AHORA todos los usuarios DEBEN tener un ROLE. Sign up no nos permitía seleccionarlo.
+        //Asignaremos todos estos usuarios a ROLE_STUDENT
+        user.setRole(rolesService.getRoles()[0]);
         usersService.addUser(user);
-        securityService.autoLogin(user.getDni(),user.getPasswordConfirm());
+        securityService.autoLogin(user.getDni(), user.getPasswordConfirm());
         return "redirect:home";
-
     }
+
     /**
      * Buscamos el usuario que encaja con la id que recibimos como parámetro . Lo guardamos como atributo del modelo
      * y retomamos la plantilla user/edit
@@ -105,26 +110,24 @@ public class UsersController {
     @RequestMapping(value = "/user/edit/{id}")
     public String getEdit(Model model, @PathVariable Long id) {
         model.addAttribute("user", usersService.getUser(id));
-        model.addAttribute("usersList",usersService.getUsers());
+        model.addAttribute("usersList", usersService.getUsers());
         return "user/edit";
     }
 
     /**
-     *
-     *
      * @param id del user que está siendo modificado como ModelAtributte (dentro de la id), user con todos los atributos del mismo.
      * @return
      */
     @RequestMapping(value = "/user/edit/{id}", method = RequestMethod.POST)
     public String setEdit(@ModelAttribute User user, @PathVariable Long id, BindingResult result) {
-        User originalUser=usersService.getUser(id);
+        User originalUser = usersService.getUser(id);
         //modificar solo DNI, apellidos y nombre.
         originalUser.setDni(user.getDni());
         originalUser.setName(user.getName());
         originalUser.setLastName(user.getLastName());
         //Una vez modificado,lo validamos y si es correcto lo sobreescribimos
-        userEditionFormValidator.validate(originalUser,result);
-        if(result.hasErrors())
+        userEditionFormValidator.validate(originalUser, result);
+        if (result.hasErrors())
             return "user/edit";
         usersService.addUser(originalUser);
         //Redirigimos a user/details
@@ -148,12 +151,11 @@ public class UsersController {
     }
 }
 /**
- *
- *      * signup crea un nuevo usuario con el rol STUDENT, lo identifica automáticamente y redirige la navegación a home.
- *      *
- *      * @param user
- *      * @param model
- *      * @return
+ * * signup crea un nuevo usuario con el rol STUDENT, lo identifica automáticamente y redirige la navegación a home.
+ * *
+ * * @param user
+ * * @param model
+ * * @return
  *
  * @RequestMapping(value = "/signup", method = RequestMethod.POST)
  * public String signup(@ModelAttribute("user") User user, Model model) {

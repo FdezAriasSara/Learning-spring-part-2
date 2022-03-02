@@ -4,9 +4,19 @@
 <body> <!-- Barra de Navegación superior -->
 <nav th:replace="fragments/nav"/>
 <div class="container"><h2>Agregar usuario</h2>
+    <!--recuerda que para que el objeto se construya automáticamente al enviar el formulario, el nombre del campo
+    tiene que coindicir con el nombre del atributo en la clase UseR-->
     <form action="/user/add" class="form-horizontal" method="post">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for=“role”>Role:</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="role" name="role">
+                <option th:each="role : ${rolesList}" th:text="${role}" th:value="${role}"></option>
+            </select></div>
+        </div>
         <div class="form-group"><label class="control-label col-sm-2" for="dni">DNI:</label>
-            <div class="col-sm-10"><input class="form-control" id="dni" name="dni" placeholder="99999999Y" required="true"
+            <div class="col-sm-10"><input class="form-control" id="dni" name="dni" placeholder="99999999Y"
+                                          required="true"
                                           type="text"/></div>
         </div>
         <div class="form-group"><label class="control-label col-sm-2" for="name">Nombre:</label>
@@ -14,8 +24,15 @@
                                           required="true" type="text"/></div>
         </div>
         <div class="form-group"><label class="control-label col-sm-2" for="lastName">Apellidos:</label>
-            <div class="col-sm-10"><input class="form-control" id="lastName" name="lastName" placeholder="Ejemplo: Peréz Almonte"
+            <div class="col-sm-10"><input class="form-control" id="lastName" name="lastName"
+                                          placeholder="Ejemplo: Peréz Almonte"
                                           required="true" type="text"/></div>
+        </div>
+        <!--Campo de password-->
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="password">Password:</label>
+            <div class="col-sm-10"> <input type="password" id="password" class="form-control" name="password" placeholder="Introduzca el Password" />
+            </div>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
