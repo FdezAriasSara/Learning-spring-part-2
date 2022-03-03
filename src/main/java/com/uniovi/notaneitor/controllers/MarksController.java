@@ -6,7 +6,6 @@ import com.uniovi.notaneitor.services.MarksService;
 import com.uniovi.notaneitor.services.UsersService;
 import com.uniovi.notaneitor.validators.MarkFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.flyway.FlywayDataSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
-import java.util.HashSet;
-import java.util.Set;
 
 @Controller
 //@RestController //Indica que la clase es un controlador REST y que responde a peticiones REST
@@ -42,7 +39,7 @@ public class MarksController {
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")
     public String getList(Model model) {
-    
+
         model.addAttribute("markList", marksService.getMarks());
         return "mark/list";//Retornamos la vista a marks/list
     }
@@ -104,6 +101,23 @@ public class MarksController {
         originalMark.setDescription(mark.getDescription());
         marksService.addMark(originalMark);
         return "redirect:/mark/details/" + id;
+    }
+
+    /**
+     * Respuesta para poner a true el atributo resend.
+     */
+    @RequestMapping(value = "/mark/{id}/resend", method = RequestMethod.GET)
+    public String setResendTrue(Model model, @PathVariable Long id) {
+        marksService.setMarkResend(true, id);
+        return "redirect:/mark/list";
+    }
+    /**
+     * Respuesta para poner a false el atributo resend.
+     */
+    @RequestMapping(value = "/mark/{id}/noresend", method = RequestMethod.GET)
+    public String setResendFalse(Model model, @PathVariable Long id) {
+        marksService.setMarkResend(false, id);
+        return "redirect:/mark/list";
     }
     //######## Parámetros de petición GET usando un identificador #################
     //@RequestMapping("/mark/details")

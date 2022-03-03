@@ -1,29 +1,39 @@
 <!-- nav.html -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary"><a class="navbar-brand" href="#"></a> <img
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <a class="navbar-brand" href="#"></a> <img
         alt="logo" src="/images/student-48.png"/>
     <button aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
             data-target="#myNavbar" data-toggle="collapse" type="button"><span
             class="navbar-toggler-icon"></span></button>
     <div class="collapse navbar-collapse" id="myNavbar">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item "><a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a></li>
+        <!-- El contenido del nav se muestra solo si el usuario está autenticado-->
+        <ul class="navbar-nav mr-auto" sec:authorize="isAuthenticated()">
+            <li class="nav-item ">
+                <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span> </a>
+            </li>
             <li class="nav-item dropdown active"><a aria-expanded="false" aria-haspopup="true"
                                                     class="nav-link dropdown-toggle"
                                                     data-toggle="dropdown" href="#" id="navbarDropdown"
                                                     role="button"> Gestión de notas </a>
-                <div aria-labelledby="navbarDropdown" class="dropdown-menu"><a class="dropdown-item" href="/mark/list">Ver
-                    Notas</a> <a class="dropdown-item" href="/mark/add">Agregar Nota</a>
+                <div aria-labelledby="navbarDropdown" class="dropdown-menu">
+                    <a class="dropdown-item" href="/mark/list">Ver Notas</a>
+                    <!--La opción de agregar una nota solo se muestra a usuarios que tengan role de profesor.-->
+                    <a class="dropdown-item" href="/mark/add" sec:authorize="hasRole('ROLE_PROFESSOR')" >Agregar Nota</a>
 
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false" > Gestión de usuarios </a>
+            <!--El menú desplegable de "gestión de usuarios" solo se muestra si eres admin-->
+            <li sec:authorize="hasRole('ROLE_ADMIN')" id= "users-menu" class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false" > Gestión de usuarios </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="/user/add">Agregar usuario</a>
                     <a class="dropdown-item" href="/user/list">Ver usuarios</a>
                 </div>
             </li>
-            <li class="nav-item dropdown"><a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
+            <!--El menú desplegable de "gestión de profesores" solo se muestra si eres admin-->
+            <li sec:authorize="hasRole('ROLE_ADMIN')" id= "professor-menu"  class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle"
                                              data-toggle="dropdown" href="#" id="profesorDropdown"
                                              role="button"> Gestión de profesores </a>
                 <div aria-labelledby="navbarDropdown" class="dropdown-menu"><a class="dropdown-item"
@@ -46,13 +56,19 @@
             </li>
 
             </li>
-            <li class="nav-item"><a class="nav-link" href="/user/signup">
-                <a class="nav-link" href="/user/signup" th:text="#{signup.message}">
+            <!--Las opciones de registro e inicio de sesión solo se muestran si NO se está autenticado-->
+            <li sec:authorize="!isAuthenticated()" class="nav-item"><a class="nav-link" href="/signup">
+                <a class="nav-link" href="/signup" th:text="#{signup.message}">
                 <i class='fas fa-user-alt' style='font-size:16px'></i> Registrate</a>
             </li>
-            <li class="nav-item"><a class="nav-link" href="/user/login">
-                <a class="nav-link" href="/user/login" th:text="#{login.message}">
+            <li sec:authorize="!isAuthenticated()" class="nav-item"><a class="nav-link" href="/login">
+                <a class="nav-link" href="/login" th:text="#{login.message}">
                 <i class='fas fa-sign-in-alt'   style='font-size:16px'></i> Identifícate</a>
+            </li>
+            <!--En caso de estar identificado , se puede desconectar.-->
+            <li sec:authorize="isAuthenticated()" class="nav-item"> <a class="nav-link" href="/logout">
+                <i class='fas fa-sign-out-alt' style='font-size:16px'></i>
+                <span>Desconectar</span> </a>
             </li>
         </ul>
         <!--<form class="form-inline"> <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"> <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button> </form> -->

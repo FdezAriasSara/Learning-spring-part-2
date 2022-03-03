@@ -2,6 +2,7 @@
 
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
       xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/head"/>
 
@@ -14,18 +15,19 @@
     <h2>Notas</h2>
 
 
-
     <p>Las notas que actualmente figuran en el sistema son las siguientes:</p>
     <!--Realizamos un botón que llame a update, y sustituya el contenido de la tabla de notas.-->
-    <button type="button" id="updateButton" class="btn btn-default">Actualizar</button>
-        <script> $( "#updateButton" ).click(function() { $("#tableMarks").load('/mark/list/update'); }); </script>
+    <button class="btn btn-default" id="updateButton" type="button">Actualizar</button>
+    <script> $("#updateButton").click(function () {
+        $("#tableMarks").load('/mark/list/update');
+    }); </script>
 
-        <!--Al pulsarlo se realiza una llamada con JQUERY a la URL /list/update sustituyendo el contenido antiguo
-        de la tabla por el que acaba de obtener (usando la función l oad)-->
+    <!--Al pulsarlo se realiza una llamada con JQUERY a la URL /list/update sustituyendo el contenido antiguo
+    de la tabla por el que acaba de obtener (usando la función l oad)-->
 
     <div class="table-responsive">
         <!--Al especificar el fragmento. este será lo unico que se actualice-->
-        <table class="table table-hover" th:fragment="tableMarks" id="tableMarks">
+        <table class="table table-hover" id="tableMarks" th:fragment="tableMarks" id="tableMarks">
             <thead>
             <tr>
                 <th scope="col">id</th>
@@ -42,8 +44,27 @@
                 <td th:text="${mark.description}"> Ejercicio 1</td>
                 <td th:text="${mark.score}">10</td>
                 <td><a th:href="${'/mark/details/' + mark.id}">detalles</a></td>
-                <td><a th:href="${'/mark/edit/' + mark.id}">modificar</a></td>
-                <td><a th:href="${'/mark/delete/' + mark.id}">eliminar</a></td>
+                <td><a sec:authorize="hasRole('ROLE_PROFESSOR')" th:href="${'/mark/edit/' + mark.id}">modificar</a>
+                    <!--Si el usuario está autenticado como ROLE_STUDENT mostramos el atributo RESEND y la opción con
+                    los dos enlaces para poder modificarlo. -->
+                    <div sec:authorize="hasRole('ROLE_STUDENT')">
+                        <div th:if="${mark.resend}">
+                            <a th:href="${'/mark/' + mark.id + '/noresend'}">Reenviar</a></div>
+                        <button type="button" th:id="${'resendButton' + mark.id}" class="btn btn-success">Reenviar</button>
+                        <script th:inline="javascript"> /*<![CDATA[*/ $( "#resendButton"+ "[[${mark.id}]]").click(
+                             function() { $.get( "/mark/[[${mark.id}]]/noresend", function( data ) { $("#tableMarks")
+                                 .load('/mark/list/update'); }); }); /*]]>*/
+                        </script>
+                        <div th:unless="${mark.resend}">
+                            <a th:href="${'/mark/' + mark.id + '/resend'}">No reenviar</a>
+                            <button type="button" th:id="${'noresendButton' + mark.id}" class="btn btn-info">No reenviar</button>
+                                <script th:inline="javascript"> /*<![CDATA[*/ $( "#noresendButton"+ "[[${mark.id}]]" ).
+                                click(function() { $.get( "/mark/[[${mark.id}]]/resend", function( data ) { $("#tableMarks").load('/mark/list/update'); });
+                                }); /*]]>*/ </script>
+                        </div>
+
+                </td>
+                <td><a sec:authorize="hasRole('PROFESSOR')" th:href="${'/mark/delete/' + mark.id}">eliminar</a></td>
             </tr>
             </tbody>
         </table>

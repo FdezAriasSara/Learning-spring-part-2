@@ -9,6 +9,7 @@ public class Mark {
     private Long id;
     private String description;
     private Double score;
+    private boolean resend=false;
     @ManyToOne //una nota pertenece a un único usuario.
     @JoinColumn(name="user_id")//la columna va a establecer una asociación entre las entidades.
     private User user;
@@ -28,6 +29,12 @@ public class Mark {
         this.description = description;
         this.score = score;
         this.user=user;
+    }
+    public boolean getResend(){
+        return this.resend;
+    }
+    public void setResend(boolean re){
+         this.resend=re;
     }
     @Override
     public String toString() {

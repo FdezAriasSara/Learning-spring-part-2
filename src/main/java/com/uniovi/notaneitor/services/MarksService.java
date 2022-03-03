@@ -3,6 +3,8 @@ package com.uniovi.notaneitor.services;
 import com.uniovi.notaneitor.entities.Mark;
 import com.uniovi.notaneitor.repositories.MarksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -27,7 +29,15 @@ public class MarksService {
         marksRepository.findAll().forEach(marks::add);
         return marks;
     }
+    public void setMarkResend(boolean revised, Long id){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();//Datos del usuario autenticado.
+        String dni=auth.getName(); //el atributo name del usuario autenticado corresponde con el dni .
+        Mark mark= marksRepository.findById(id).get();//obtenemos la nota que intentamos modificar
+        if(mark.getUser().getDni().equals(dni)){//si pertenece al usuario autenticado
+            marksRepository.updateResend(revised,id);//Cambiamos el estado de resend.
+        }
 
+    }
     public Mark getMark(Long id) {
         //Obtenemos la lista de notas consultadas en la sesión
         Set<Mark> consultedList = (Set<Mark>) httpSession.getAttribute("consultedList");
