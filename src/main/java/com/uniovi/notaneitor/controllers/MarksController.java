@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
@@ -40,11 +41,17 @@ public class MarksController {
     //Añadimos un metodo (el nombre no es relevante, pero sí la notación @RequestMapping)
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")
-    public String getList(Model model, Principal principal) {
+    public String getList(Model model, Principal principal, @RequestParam(value="",required=false)String searchText) {
         String dni=principal.getName();
         User user= usersService.getUserByDni(dni);
-        //Mostramos las notas del usuario autenticado
-        model.addAttribute("markList", marksService.getMarksForUser(user));
+        if(searchText!=null && !searchText.isEmpty()){
+            model.addAttribute("markList",//Mostramos las notas SEGÚN el  usuario autenticado
+                    marksService.searchMarksByDescriptionAndNameForUser(searchText,user));
+        }else{
+            model.addAttribute("markList", marksService.getMarksForUser(user));
+        }
+
+
         return "mark/list";//Retornamos la vista a marks/list
     }
 

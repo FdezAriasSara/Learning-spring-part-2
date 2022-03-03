@@ -24,6 +24,16 @@ public class MarksService {
     public MarksService(HttpSession httpSession) {
         this.httpSession = httpSession;
     }
+    public List<Mark> searchMarksByDescriptionAndNameForUser(String searchText, User user) {
+        List<Mark> marks = new ArrayList<Mark>();
+       searchText = "%"+searchText+"%";//COMODÍN SQL: en si la cadena introducida se encuentra en la descripción o el nombre del usuario
+        if (user.getRole().equals("ROLE_STUDENT")) {//Si el usuario es estudiante se mostraran sus propias notas.
+            marks = marksRepository.searchByDescriptionNameAndUser(searchText, user);
+        } if (user.getRole().equals("ROLE_PROFESSOR")) {
+            //Si es profesor las notas se filtrarán del conjunto total de notas.
+            marks = marksRepository.searchByDescriptionAndName(searchText); }
+        return marks;
+    }
     public List<Mark> getMarksForUser(User user) {
         List<Mark> marks = new ArrayList<Mark>();
         //Si el rol del ususario es de estudiante, le mostrará solo sus propias notas.

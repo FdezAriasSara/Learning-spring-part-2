@@ -13,7 +13,11 @@
 <nav th:replace="fragments/nav"/>
 <div class="container" id="main-container">
     <h2>Notas</h2>
-
+    <form action="/mark/list" class="form-inline">
+        <div class="form-group"><input class="form-control" name="searchText" placeholder="Buscar por descripción o nombre del alumno" size="50"
+                                       type="text"></div>
+        <button class="btn btn-primary" type="submit">Buscar</button>
+    </form>
 
     <p>Las notas que actualmente figuran en el sistema son las siguientes:</p>
     <!--Realizamos un botón que llame a update, y sustituya el contenido de la tabla de notas.-->
@@ -50,18 +54,29 @@
                     <div sec:authorize="hasRole('ROLE_STUDENT')">
                         <div th:if="${mark.resend}">
                             <!--a th:href="${'/mark/' + mark.id + '/noresend'}">Reenviar<-->
-                            </div>
-                        <button type="button" th:id="${'resendButton' + mark.id}" class="btn btn-success">Reenviar</button>
-                        <script th:inline="javascript"> /*<![CDATA[*/ $( "#resendButton"+ "[[${mark.id}]]").click(
-                             function() { $.get( "/mark/[[${mark.id}]]/noresend", function( data ) { $("#tableMarks")
-                                 .load('/mark/list/update'); }); }); /*]]>*/
+                        </div>
+                        <button class="btn btn-success" th:id="${'resendButton' + mark.id}" type="button">Reenviar
+                        </button>
+                        <script th:inline="javascript"> /*<![CDATA[*/
+                        $("#resendButton" + "[[${mark.id}]]").click(
+                            function () {
+                                $.get("/mark/[[${mark.id}]]/noresend", function (data) {
+                                    $("#tableMarks")
+                                        .load('/mark/list/update');
+                                });
+                            }); /*]]>*/
                         </script>
                         <div th:unless="${mark.resend}">
                             <!--a th:href="${'/mark/' + mark.id + '/resend'}">No reenviar</a-->
-                            <button type="button" th:id="${'noresendButton' + mark.id}" class="btn btn-info">No reenviar</button>
-                                <script th:inline="javascript"> /*<![CDATA[*/ $( "#noresendButton"+ "[[${mark.id}]]" ).
-                                click(function() { $.get( "/mark/[[${mark.id}]]/resend", function( data ) { $("#tableMarks").load('/mark/list/update'); });
-                                }); /*]]>*/ </script>
+                            <button class="btn btn-info" th:id="${'noresendButton' + mark.id}" type="button">No
+                                reenviar
+                            </button>
+                            <script th:inline="javascript"> /*<![CDATA[*/
+                            $("#noresendButton" + "[[${mark.id}]]").click(function () {
+                                $.get("/mark/[[${mark.id}]]/resend", function (data) {
+                                    $("#tableMarks").load('/mark/list/update');
+                                });
+                            }); /*]]>*/ </script>
                         </div>
 
                 </td>

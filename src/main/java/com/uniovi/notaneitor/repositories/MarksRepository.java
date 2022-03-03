@@ -17,4 +17,16 @@ public interface MarksRepository extends CrudRepository<Mark, Long> {
     @Query("UPDATE Mark SET resend = ?1 WHERE id=?2")
     void updateResend(Boolean resend,Long id);
 
+    /**
+     * Devuelve TODAS las notas de la app cuando el texto buscado coincide con el nombre del usuario o de la descripción
+      */
+    @Query("SELECT r FROM Mark r Where (LOWER (r.description) LIKE LOWER(?1) OR LOWER(r.user.name) LIKE LOWER(?1))")
+    List<Mark> searchByDescriptionAndName(String searchText);
+    /**
+     * Devuelve las notas relacionadas con el usuario enviado como parámetro, cuando el texto buscado coincide con el nombre
+     * del usuario o de la descripción de la nota.
+     */
+    @Query("SELECT r FROM Mark r Where (LOWER (r.description) LIKE LOWER(?1) OR LOWER(r.user.name) LIKE LOWER(?1)) AND r.user=?2")
+    List<Mark> searchByDescriptionNameAndUser(String searchText,User user);
+    //USO DE LA FUNCION LOWER PARA EVITAR SENSIBILIDAD A MAYUSCULAS O MINUSCULAS.
 }
