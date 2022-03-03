@@ -2,6 +2,7 @@ package com.uniovi.notaneitor.controllers;
 //Imprescindible : Importar el paquete que contiene las anotaciones que usemos
 
 import com.uniovi.notaneitor.entities.Mark;
+import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.services.MarksService;
 import com.uniovi.notaneitor.services.UsersService;
 import com.uniovi.notaneitor.validators.MarkFormValidator;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
+import java.security.Principal;
 
 @Controller
 //@RestController //Indica que la clase es un controlador REST y que responde a peticiones REST
@@ -38,9 +40,11 @@ public class MarksController {
     //Añadimos un metodo (el nombre no es relevante, pero sí la notación @RequestMapping)
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")
-    public String getList(Model model) {
-
-        model.addAttribute("markList", marksService.getMarks());
+    public String getList(Model model, Principal principal) {
+        String dni=principal.getName();
+        User user= usersService.getUserByDni(dni);
+        //Mostramos las notas del usuario autenticado
+        model.addAttribute("markList", marksService.getMarksForUser(user));
         return "mark/list";//Retornamos la vista a marks/list
     }
 

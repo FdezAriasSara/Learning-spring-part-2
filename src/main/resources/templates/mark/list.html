@@ -27,7 +27,7 @@
 
     <div class="table-responsive">
         <!--Al especificar el fragmento. este será lo unico que se actualice-->
-        <table class="table table-hover" id="tableMarks" th:fragment="tableMarks" id="tableMarks">
+        <table class="table table-hover" id="tableMarks" th:fragment="tableMarks">
             <thead>
             <tr>
                 <th scope="col">id</th>
@@ -49,14 +49,15 @@
                     los dos enlaces para poder modificarlo. -->
                     <div sec:authorize="hasRole('ROLE_STUDENT')">
                         <div th:if="${mark.resend}">
-                            <a th:href="${'/mark/' + mark.id + '/noresend'}">Reenviar</a></div>
+                            <!--a th:href="${'/mark/' + mark.id + '/noresend'}">Reenviar<-->
+                            </div>
                         <button type="button" th:id="${'resendButton' + mark.id}" class="btn btn-success">Reenviar</button>
                         <script th:inline="javascript"> /*<![CDATA[*/ $( "#resendButton"+ "[[${mark.id}]]").click(
                              function() { $.get( "/mark/[[${mark.id}]]/noresend", function( data ) { $("#tableMarks")
                                  .load('/mark/list/update'); }); }); /*]]>*/
                         </script>
                         <div th:unless="${mark.resend}">
-                            <a th:href="${'/mark/' + mark.id + '/resend'}">No reenviar</a>
+                            <!--a th:href="${'/mark/' + mark.id + '/resend'}">No reenviar</a-->
                             <button type="button" th:id="${'noresendButton' + mark.id}" class="btn btn-info">No reenviar</button>
                                 <script th:inline="javascript"> /*<![CDATA[*/ $( "#noresendButton"+ "[[${mark.id}]]" ).
                                 click(function() { $.get( "/mark/[[${mark.id}]]/resend", function( data ) { $("#tableMarks").load('/mark/list/update'); });

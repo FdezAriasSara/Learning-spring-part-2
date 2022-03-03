@@ -1,6 +1,7 @@
 package com.uniovi.notaneitor.services;
 
 import com.uniovi.notaneitor.entities.Mark;
+import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.repositories.MarksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,13 @@ public class MarksService {
     public MarksService(HttpSession httpSession) {
         this.httpSession = httpSession;
     }
-
+    public List<Mark> getMarksForUser(User user) {
+        List<Mark> marks = new ArrayList<Mark>();
+        //Si el rol del ususario es de estudiante, le mostrará solo sus propias notas.
+        if (user.getRole().equals("ROLE_STUDENT")) { marks = marksRepository.findAllByUser(user);}
+        //Si el rol del usuario es de profesor le mostrará TODAS las notas
+        if (user.getRole().equals("ROLE_PROFESSOR")) { marks = getMarks(); } return marks;
+    }
     public List<Mark> getMarks() {
         List<Mark> marks = new ArrayList<>();
         marksRepository.findAll().forEach(marks::add);
