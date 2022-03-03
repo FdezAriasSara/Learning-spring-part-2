@@ -4,15 +4,15 @@ import com.uniovi.notaneitor.entities.Mark;
 import com.uniovi.notaneitor.entities.User;
 import com.uniovi.notaneitor.repositories.MarksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service//Notación que indica que esta clase es un servicio-> Los sevicios crean BEANS
 public class MarksService {
@@ -24,29 +24,28 @@ public class MarksService {
     public MarksService(HttpSession httpSession) {
         this.httpSession = httpSession;
     }
-    public List<Mark> searchMarksByDescriptionAndNameForUser(String searchText, User user) {
-        List<Mark> marks = new ArrayList<Mark>();
+    public Page<Mark> searchMarksByDescriptionAndNameForUser(Pageable pageable,String searchText, User user) {
+        Page<Mark> marks =new PageImpl<Mark>(new LinkedList<Mark>());
        searchText = "%"+searchText+"%";//COMODÍN SQL: en si la cadena introducida se encuentra en la descripción o el nombre del usuario
         if (user.getRole().equals("ROLE_STUDENT")) {//Si el usuario es estudiante se mostraran sus propias notas.
-            marks = marksRepository.searchByDescriptionNameAndUser(searchText, user);
+            marks = marksRepository.searchByDescriptionNameAndUser(pageable,searchText, user);
         } if (user.getRole().equals("ROLE_PROFESSOR")) {
             //Si es profesor las notas se filtrarán del conjunto total de notas.
-            marks = marksRepository.searchByDescriptionAndName(searchText); }
+            marks = marksRepository.searchByDescriptionAndName(pageable,searchText); }
         return marks;
     }
-    public List<Mark> getMarksForUser(User user) {
-        List<Mark> marks = new ArrayList<Mark>();
+    public Page<Mark> getMarksForUser(Pageable pageable,User user) {
+       Page<Mark> marks =new PageImpl<Mark>(new LinkedList<Mark>());
         //Si el rol del ususario es de estudiante, le mostrará solo sus propias notas.
-        if (user.getRole().equals("ROLE_STUDENT")) { marks = marksRepository.findAllByUser(user);}
+        if (user.getRole().equals("ROLE_STUDENT")) { marks = marksRepository.findAllByUser(pageable,user);}
         //Si el rol del usuario es de profesor le mostrará TODAS las notas
-        if (user.getRole().equals("ROLE_PROFESSOR")) { marks = getMarks(); } return marks;
+        if (user.getRole().equals("ROLE_PROFESSOR")) { marks = getMarks(pageable); } return marks;
     }
-    public List<Mark> getMarks() {
-        List<Mark> marks = new ArrayList<>();
-        marksRepository.findAll().forEach(marks::add);
+    public Page<Mark> getMarks(Pageable pageable) {
+        Page<Mark> marks =  marksRepository.findAll(pageable);
         return marks;
     }
-    public void setMarkResend(boolean revised, Long id){
+    public void setMarkResend(Boolean revised, Long id){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();//Datos del usuario autenticado.
         String dni=auth.getName(); //el atributo name del usuario autenticado corresponde con el dni .
         Mark mark= marksRepository.findById(id).get();//obtenemos la nota que intentamos modificar

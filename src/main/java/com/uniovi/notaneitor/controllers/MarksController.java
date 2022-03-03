@@ -7,6 +7,9 @@ import com.uniovi.notaneitor.services.MarksService;
 import com.uniovi.notaneitor.services.UsersService;
 import com.uniovi.notaneitor.validators.MarkFormValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
+import java.util.LinkedList;
 
 @Controller
 //@RestController //Indica que la clase es un controlador REST y que responde a peticiones REST
@@ -33,25 +37,28 @@ public class MarksController {
     private HttpSession httpSession;
 
     @RequestMapping("/mark/list/update")
-    public String updateList(Model model) {
-        model.addAttribute("markList", marksService.getMarks());
+    public String updateList( Model model,Pageable pageable,Principal principal) {
+        String dni= principal.getName();
+        User user=usersService.getUserByDni(dni);
+        Page<Mark> marks =marksService.getMarksForUser(pageable,user);
+        model.addAttribute("markList", marks.getContent());
         return "mark/list::tableMarks";//retorna el fragmento table marks
     }
 
     //Añadimos un metodo (el nombre no es relevante, pero sí la notación @RequestMapping)
     //que debe contener la url de la petición que responde cada método
     @RequestMapping("/mark/list")
-    public String getList(Model model, Principal principal, @RequestParam(value="",required=false)String searchText) {
+    public String getList(Model model, Pageable pageable,Principal principal, @RequestParam(value="",required=false)String searchText) {
         String dni=principal.getName();
         User user= usersService.getUserByDni(dni);
+        Page<Mark> marks= new PageImpl<Mark>(new LinkedList<Mark>());
         if(searchText!=null && !searchText.isEmpty()){
-            model.addAttribute("markList",//Mostramos las notas SEGÚN el  usuario autenticado
-                    marksService.searchMarksByDescriptionAndNameForUser(searchText,user));
+           marks=marksService.searchMarksByDescriptionAndNameForUser(pageable,searchText,user);
         }else{
-            model.addAttribute("markList", marksService.getMarksForUser(user));
+           marks=marksService.getMarksForUser(pageable,user);
         }
-
-
+    model.addAttribute("markList", marks.getContent());
+    model.addAttribute("page",marks);
         return "mark/list";//Retornamos la vista a marks/list
     }
 

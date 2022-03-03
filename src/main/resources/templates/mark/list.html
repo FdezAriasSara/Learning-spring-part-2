@@ -14,7 +14,8 @@
 <div class="container" id="main-container">
     <h2>Notas</h2>
     <form action="/mark/list" class="form-inline">
-        <div class="form-group"><input class="form-control" name="searchText" placeholder="Buscar por descripción o nombre del alumno" size="50"
+        <div class="form-group"><input class="form-control" name="searchText"
+                                       placeholder="Buscar por descripción o nombre del alumno" size="50"
                                        type="text"></div>
         <button class="btn btn-primary" type="submit">Buscar</button>
     </form>
@@ -22,9 +23,16 @@
     <p>Las notas que actualmente figuran en el sistema son las siguientes:</p>
     <!--Realizamos un botón que llame a update, y sustituya el contenido de la tabla de notas.-->
     <button class="btn btn-default" id="updateButton" type="button">Actualizar</button>
-    <script> $("#updateButton").click(function () {
-        $("#tableMarks").load('/mark/list/update');
-    }); </script>
+    <!--Debemos preparar el script para incluir parámetros Thymeleaft (incluimos el th:inline=“javascript” y el CDATA).-->
+    <script th:inline="javascript"> /*<![CDATA[*/
+    $("#updateButton").click(function () {
+        var numberPage = [[${param.page}]];
+        var urlUpdate = '/mark/list/update';
+        if (numberPage != null) {
+            urlUpdate += "?page=" + numberPage[0];
+        }
+        $("#tableMarks").load(urlUpdate);
+    }); /*]]>*/ </script>
 
     <!--Al pulsarlo se realiza una llamada con JQUERY a la URL /list/update sustituyendo el contenido antiguo
     de la tabla por el que acaba de obtener (usando la función l oad)-->
@@ -61,9 +69,11 @@
                         $("#resendButton" + "[[${mark.id}]]").click(
                             function () {
                                 $.get("/mark/[[${mark.id}]]/noresend", function (data) {
-                                    $("#tableMarks")
-                                        .load('/mark/list/update');
-                                });
+                                    var numberPage = [[${param.page}]];
+                                    var urlUpdate = '/mark/list/update';
+                                    if ( numberPage != null ){ urlUpdate += "?page="+numberPage[0];
+                                    }
+                                    $("#tableMarks").load(urlUpdate);});
                             }); /*]]>*/
                         </script>
                         <div th:unless="${mark.resend}">
@@ -74,7 +84,10 @@
                             <script th:inline="javascript"> /*<![CDATA[*/
                             $("#noresendButton" + "[[${mark.id}]]").click(function () {
                                 $.get("/mark/[[${mark.id}]]/resend", function (data) {
-                                    $("#tableMarks").load('/mark/list/update');
+                                    var numberPage = [[${param.page}]];
+                                    var urlUpdate = '/mark/list/update';
+                                    if ( numberPage != null ){ urlUpdate += "?page="+numberPage[0];
+                                    } $("#tableMarks").load(urlUpdate);
                                 });
                             }); /*]]>*/ </script>
                         </div>
@@ -88,6 +101,9 @@
     <div th:if="${#lists.isEmpty(markList)}"> No marks</div>
 </div>
 
-
+</div>
+<footer th:replace="fragments/pagination"/>
+</div>
+<footer th:replace="fragments/footer"/>
 </body>
 </html>
