@@ -6,25 +6,25 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Teacher {
+public class Professor {
 
     private String name;
     private String surname;
-    private String Dni;
+    private String dni;
     private String category;
     @Id
     @GeneratedValue
     private Long id;
 
 
-    public Teacher(String name, String surname, String dni,String category ,Long id) {
+    public Professor(String name, String surname, String dni, String category , Long id) {
         this.name = name;
         this.surname = surname;
-        this.Dni = dni;
+        this.dni = dni;
         this.category = category;
         this.id=id;
     }
-    public Teacher() {
+    public Professor() {
        //In order for teacher class to be a bean.
     }
 
@@ -45,11 +45,11 @@ public class Teacher {
     }
 
     public String getDni() {
-        return Dni;
+        return dni;
     }
 
     public void setDni(String dni) {
-        this.Dni = dni;
+        this.dni = dni;
     }
     public  Long getId() {
         return id;
@@ -68,10 +68,10 @@ public class Teacher {
 
     @Override
     public String toString() {
-        return "Teacher{" +
+        return "Professor{" +
                 "name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", Dni='" + Dni + '\'' +
+                ", Dni='" + dni + '\'' +
                 ", category='" + category + '\'' +
                 ", id=" + id +
                 '}';
