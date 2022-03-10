@@ -1,9 +1,6 @@
 package com.uniovi.notaneitor;
 
-import com.uniovi.notaneitor.pageobjects.PO_HomeView;
-import com.uniovi.notaneitor.pageobjects.PO_Properties;
-import com.uniovi.notaneitor.pageobjects.PO_SignUpView;
-import com.uniovi.notaneitor.pageobjects.PO_View;
+import com.uniovi.notaneitor.pageobjects.*;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -134,7 +131,7 @@ class NotaneitorApplicationTests {
     //PR06C. Prueba del formulario de registro. Apellido corto.
     // Propiedad: Error.signup.lastName.length
     @Test
-    @Order(9)
+    @Order(8)
     public void PR06C() {
         PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
         PO_SignUpView.fillForm(driver, "99999990B", "Josefa", "Pe", "77777", "77777");
@@ -147,7 +144,7 @@ class NotaneitorApplicationTests {
     //PR06D. Prueba del formulario de registro. Contraseña corta.
     // Propiedad: Error.signup.password.length
     @Test
-    @Order(10)
+    @Order(8)
     public void PR06D() {
         PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
         PO_SignUpView.fillForm(driver, "99999990B", "Josefa", "Benítez", "7", "7");
@@ -159,7 +156,7 @@ class NotaneitorApplicationTests {
     //PR06E: Prueba del formulario de registro. Contraseñas no coinciden..
     // Propiedad: Error.signup.passwordConfirm.coincidence
     @Test
-    @Order(11)
+    @Order(8)
     public void PR06E() {
         PO_HomeView.clickOption(driver, "signup", "class", "btn btn-primary");
         PO_SignUpView.fillForm(driver, "99999990B", "Josefa", "Benítez", "77141234", "123444221");
@@ -168,7 +165,64 @@ class NotaneitorApplicationTests {
         String checkText = PO_HomeView.getP().getString("Error.signup.passwordConfirm.coincidence", PO_Properties.getSPANISH());
         Assertions.assertEquals(checkText, result.get(0).getText());
     }
-    //Error.signup.passwordConfirm.coincidence
+    //PR07: Identificación válida con usuario de ROL usuario (99999990A/123456).
+    @Test @Order(9) public void PR07() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        //
+        PO_LoginView.fillLoginForm(driver, "99999990A", "123456");
+        //Comprobamos que entramos en la pagina privada de Alumno
+        String checkText = "Notas del usuario";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText); Assertions.assertEquals(checkText, result.get(0).getText());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+    //PR08: Identificación válida con usuario de ROL profesor (99999993D/123456).
+    @Test @Order(10) public void PR08() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999993D", "123456");
+        //Comprobamos que entramos en la pagina privada de profesor
+        String checkText = "Notas del usuario";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText); Assertions.assertEquals(checkText, result.get(0).getText());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+    //PR09: Identificación válida con usuario de ROL Administrador (99999988F/123456).
+    @Test @Order(11) public void PR09() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999988F", "123456");
+        //Comprobamos que entramos en la pagina privada del administrador
+        String checkText = "Notas del usuario";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText); Assertions.assertEquals(checkText, result.get(0).getText());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+    //PR10: Identificación inválida con usuario de ROL alumno (99999990A/123456).
+
+    @Test @Order(12) public void PR10() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999990A", "123456");
+        //Comprobamos que entramos en la pagina privada de profesor
+        String checkText = "Notas del usuario";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText); Assertions.assertEquals(checkText, result.get(0).getText());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+    }
+    //PR11: Identificación válida y desconexión con usuario de ROL usuario (99999990A/123456).
+    @Test @Order(13) public void PR11() {
+        //Vamos al formulario de logueo.
+        PO_HomeView.clickOption(driver, "login", "class", "btn btn-primary");
+        //Rellenamos el formulario
+        PO_LoginView.fillLoginForm(driver, "99999990A", "123456");
+        //Comprobamos que entramos en la pagina privada de profesor
+        String checkText = "Notas del usuario";
+        List<WebElement> result = PO_View.checkElementBy(driver, "text", checkText); Assertions.assertEquals(checkText, result.get(0).getText());
+        Assertions.assertEquals(checkText, result.get(0).getText());
+        PO_NavView.clickOption(driver, "logout", "class", "btn btn-primary");
+    }
 }
 
 
